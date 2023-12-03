@@ -10,6 +10,7 @@ import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.*;
 import com.jogamp.opengl.util.texture.spi.JPEGImage;
 
+import javax.naming.Name;
 import javax.xml.namespace.QName;
 
 public class Alien {
@@ -21,11 +22,12 @@ public class Alien {
 
     private TransformNode translateX, alienMoveTranslate;
 
-    public Alien(GL3 gl, Camera cameraIn, Light lightIn, Texture t1){
+    public Alien(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, float xPos){
 
 
         this.camera = cameraIn;
         this.light = lightIn;
+        this.xPosition = xPos;
 
         sphere = makeSphere(gl, t1);
 
@@ -37,7 +39,7 @@ public class Alien {
 
 
         alienRoot = new NameNode("root");
-        alienMoveTranslate = new TransformNode("alien transform", Mat4Transform.translate(xPosition,0,0));
+        alienMoveTranslate = new TransformNode("alien transform", Mat4Transform.translate(xPosition,alienBodyScale/2,0));
 
         //TransformNode alienTranslate = new TransformNode("alien transform",Mat4Transform.translate(0,0,0));
 
@@ -135,6 +137,42 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.translate(-0.7f, alienBodyScale / 5 , 1.1f));
         TransformNode leftEyeTranslate = new TransformNode("left eye translate", m);
 
+        //Antenna
+
+        NameNode antenna = new NameNode("antenna");
+        //antenna positioning
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(0, 1.2f , 0));
+        TransformNode antennaTranslate = new TransformNode("antenna translate", m);
+
+        //Antenna Base Shape
+        float antennaBaseHeight = alienHeadScale / 3;
+        float antennaTopScale  = alienHeadScale / 11;
+        float antennaBaseWidth = 0.2f;
+        NameNode antennaBase = new NameNode("antennaBase");
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(antennaBaseWidth, antennaBaseHeight,antennaBaseWidth));
+        TransformNode antennaBaseTransform = new TransformNode("antenna base transform", m);
+        ModelNode antennaBaseShape = new ModelNode("Sphere(antennaBase)", sphere);
+
+        //Antenna Base positioning
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(0, 1.1f , 0));
+        TransformNode antennaBasePositioning = new TransformNode("antenna base translate", m);
+
+        //Antenna top Shape
+        NameNode antennaTop = new NameNode("antennaTop");
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(antennaTopScale, antennaTopScale,antennaTopScale));
+        TransformNode antennaTopTransform = new TransformNode("antenna top transform", m);
+        ModelNode antennaTopShape = new ModelNode("Sphere(antennaBase)", sphere);
+
+        //Antenna Top positioning
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(0, 1.8f , 0));
+        TransformNode antennaTopPositioning = new TransformNode("antenna top translate", m);
+
+
 
 
         alienRoot.addChild(alienMoveTranslate);
@@ -143,6 +181,14 @@ public class Alien {
                     bodyTransform.addChild(bodyShape);
                 body.addChild(headTranslate);
                     headTranslate.addChild(head);
+                        head.addChild(antennaTranslate);
+                            antennaTranslate.addChild(antenna);
+                                antenna.addChild(antennaBasePositioning);
+                                    antennaBasePositioning.addChild(antennaBaseTransform);
+                                        antennaBaseTransform.addChild(antennaBaseShape);
+                                antenna.addChild(antennaTopPositioning);
+                                    antennaTopPositioning.addChild(antennaTopTransform);
+                                        antennaTopTransform.addChild(antennaTopShape);
                         head.addChild(rightEarTranslate);
                             rightEarTranslate.addChild(rightEar);
                                 rightEar.addChild(rightEarTransform);

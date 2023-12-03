@@ -70,6 +70,8 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private Alien alien1, alien2;
 
+    private Spotlight spotlight;
+
     private void initialise(GL3 gl) {
         createRandomNumbers();
 
@@ -87,8 +89,9 @@ public class Aliens_GLEventListener implements GLEventListener{
         Mat4 modelMatrix = Mat4Transform.scale(16,1f,16);
         floor = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("chequerboard"));*/
 
-        alien1 = new Alien(gl, camera, light, textures.get("chequerboard"));
-
+        alien1 = new Alien(gl, camera, light, textures.get("chequerboard"),-4f);
+        alien2 = new Alien(gl, camera, light, textures.get("chequerboard"),4f);
+        spotlight = new Spotlight(gl, camera, light, textures.get("chequerboard"),-15f);
     }
 
     private void render(GL3 gl) {
@@ -97,6 +100,8 @@ public class Aliens_GLEventListener implements GLEventListener{
         light.render(gl);
         //floor.render(gl);
         alien1.render(gl);
+        alien2.render(gl);
+        spotlight.render(gl);
     }
 
 
