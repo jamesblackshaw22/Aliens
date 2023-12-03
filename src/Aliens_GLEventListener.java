@@ -8,7 +8,7 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     public Aliens_GLEventListener(Camera camera) {
         this.camera = camera;
-        this.camera.setPosition(new Vec3(4f,12f,18f));
+        this.camera.setPosition(new Vec3(4f,20f,40f));
     }
 
     // ***************************************************
@@ -96,25 +96,13 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        light.setPosition(getLightPosition());  // changing light position each frame
-        light.render(gl);
+        light.setPosition(new Vec3(15f,15f,0f));  // changing light position each frame
         //floor.render(gl);
         alien1.render(gl);
         alien2.render(gl);
         spotlight.render(gl);
     }
 
-
-
-    // The light's postion is continually being changed, so needs to be calculated for each frame.
-    private Vec3 getLightPosition() {
-        double elapsedTime = getSeconds()-startTime;
-        float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
-        float y = 2.7f;
-        float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-        return new Vec3(x,y,z);
-        //return new Vec3(5f,3.4f,5f);
-    }
 
     // ***************************************************
     /* TIME
