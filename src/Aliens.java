@@ -44,6 +44,12 @@ public class Aliens extends JFrame implements ActionListener{
         b = new JButton("Spotlight");
         b.addActionListener(this);
         p.add(b);
+        b = new JButton("Toggle Rock");
+        b.addActionListener(this);
+        p.add(b);
+        b = new JButton("Toggle Roll");
+        b.addActionListener(this);
+        p.add(b);
         this.add(p, BorderLayout.SOUTH);
 
         addWindowListener(new WindowAdapter() {
@@ -69,6 +75,10 @@ public class Aliens extends JFrame implements ActionListener{
         } else if (e.getActionCommand().equalsIgnoreCase("spotlight")){
             glEventListener.toggleSpotlight();
             glEventListener.lightsHaveChanged();
+        } else if (e.getActionCommand().equalsIgnoreCase("toggle rock")){
+            glEventListener.toggleRock();
+        }else if (e.getActionCommand().equalsIgnoreCase("toggle roll")){
+            glEventListener.toggleRoll();
         }
 
     }

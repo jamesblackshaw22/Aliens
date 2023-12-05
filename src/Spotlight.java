@@ -1,23 +1,13 @@
 import gmaths.*;
 
-import java.nio.*;
-import java.util.HashMap;
-
-import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.util.*;
-import com.jogamp.opengl.util.awt.*;
-import com.jogamp.opengl.util.glsl.*;
 import com.jogamp.opengl.util.texture.*;
-import com.jogamp.opengl.util.texture.awt.*;
-import com.jogamp.opengl.util.texture.spi.JPEGImage;
 
 
 public class Spotlight {
     private Camera camera;
     private Light[] lights;
 
-    private double timeElapsed = 0;
     private ModelMultipleLights sphere, lightSphere;
     private SGNode spotlightRoot;
 
@@ -26,7 +16,7 @@ public class Spotlight {
 
     private ModelNode[] allModels = new ModelNode[3];
 
-    private TransformNode translateX, spotlightMoveTranslate;
+    private TransformNode translateX, spotlightMoveTranslate, rotateHeadAround;
 
 
     public Spotlight(GL3 gl, Boolean isSpotlightOn, Camera cameraIn, Light[] lightsIn, Texture t1, float xPos){
@@ -41,64 +31,57 @@ public class Spotlight {
         float spotlightBaseWidth = 0.6f;
 
         spotlightRoot = new NameNode("root");
-        spotlightMoveTranslate = new TransformNode("spotlight transform", Mat4Transform.translate(xPosition,spotlightBaseHeight /2,0));
+        TransformNode spotlightMoveTranslate = new TransformNode("spotlight transform", Mat4Transform.translate(xPosition, 2f , 0));
 
-        //Spotlight Base Shape
+        /*BASE*/
         NameNode base = new NameNode("base");
-        Mat4 m = Mat4Transform.scale(spotlightBaseWidth,spotlightBaseHeight,spotlightBaseWidth);
-        TransformNode spotlightBaseTransform = new TransformNode("spotlight base transform", m);
+        TransformNode spotlightBaseTranslate = new TransformNode("spotlight base transform", Mat4Transform.translate(0,spotlightBaseHeight/2,0));
+        TransformNode spotlightBaseTransform = new TransformNode("spotlight base transform", Mat4Transform.scale(spotlightBaseWidth, spotlightBaseHeight, spotlightBaseWidth));
         ModelNode spotlightBaseShape = new ModelNode("Sphere(spotlight base)", sphere);
         allModels[0] = spotlightBaseShape;
 
+        /*HEAD*/
         NameNode head = new NameNode("head");
-        m = new Mat4(1);
-        // Assuming the pole's height is spotlightBaseHeight and we want to translate the head on top of it
-        m = Mat4.multiply(m, Mat4Transform.translate(0, spotlightBaseHeight/2, 0));
-        TransformNode moveHeadToTopOfPole = new TransformNode("head translate", m);
-
-        // Apply rotation to tilt the head downward
+        TransformNode moveHeadToTopOfPole = new TransformNode("head translate", Mat4Transform.translate(0, spotlightBaseHeight, 0));
         TransformNode rotateHeadDown = new TransformNode("head rotate down", Mat4Transform.rotateAroundZ(-45));
-        TransformNode rotateHeadAround = new TransformNode("head rotate around", Mat4Transform.rotateAroundY(0));
-        rotateHeadAround.update();
+        rotateHeadAround = new TransformNode("head rotate around", Mat4Transform.rotateAroundY(0));
 
-        //Spotlight Attachment Shape
+
+        /*ATTACHMENT*/
         NameNode attachment = new NameNode("attachment");
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(3f,0.5f,0.5f));
-        TransformNode attachmentTransform = new TransformNode("attachment transform", m);
+        TransformNode attachmentTransform = new TransformNode("attachment transform", Mat4Transform.scale(3f, 0.5f, 0.5f));
         ModelNode attachmentShape = new ModelNode("Sphere(attachment)", sphere);
         allModels[1] = attachmentShape;
 
-        //Spotlight Light Shape
+
         NameNode light = new NameNode("light");
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(0.5f,0.5f,0.5f));
-        TransformNode lightTransform = new TransformNode("light transform", m);
+        TransformNode moveLightTranslate = new TransformNode("light translate", Mat4Transform.translate(1.3f, 0, 0));
+        TransformNode lightTransform = new TransformNode("light transform", Mat4Transform.scale(0.5f, 0.5f, 0.5f));
         ModelNode lightShape = new ModelNode("Sphere(light)", sphere);
         allModels[2] = lightShape;
 
-        //Spotlight light positioning
-        TransformNode moveLightTranslate = new TransformNode("light translate", Mat4Transform.translate(1.3f,0,0));
 
-        Vec3 initialLightPosition = new Vec3(xPosition + 1.3f,spotlightBaseHeight / 2,0);
+        Vec3 initialLightPosition = new Vec3(xPosition + 1.3f, spotlightBaseHeight, 0);
         setLightPosition(initialLightPosition);
 
         spotlightRoot.addChild(spotlightMoveTranslate);
             spotlightMoveTranslate.addChild(base);
-                base.addChild(spotlightBaseTransform);
-                    spotlightBaseTransform.addChild(spotlightBaseShape);
+                base.addChild(spotlightBaseTranslate);
+                    spotlightBaseTranslate.addChild(spotlightBaseTransform);
+                        spotlightBaseTransform.addChild(spotlightBaseShape);
                 base.addChild(moveHeadToTopOfPole);
                     moveHeadToTopOfPole.addChild(rotateHeadAround);
                         rotateHeadAround.addChild(rotateHeadDown);
                             rotateHeadDown.addChild(head);
-                                head.addChild(moveLightTranslate);
-                                    moveLightTranslate.addChild(light);
-                                        light.addChild(lightTransform);
-                                            lightTransform.addChild(lightShape);
                                 head.addChild(attachment);
                                     attachment.addChild(attachmentTransform);
                                         attachmentTransform.addChild(attachmentShape);
-        //alienRoot.print(1,false);
+                                head.addChild(light);
+                                    light.addChild(moveLightTranslate);
+                                        moveLightTranslate.addChild(lightTransform);
+                                            lightTransform.addChild(lightShape);
+
+        // Make sure to update the root of the scene graph
         spotlightRoot.update();
 
     }
@@ -133,5 +116,12 @@ public class Spotlight {
         for (ModelNode node : allModels) {
             node.updateLights(lights);
         }
+    }
+
+    public void updateRotation(double elapsedTime){
+        float rotationSpeed = 360.0f / 4.0f; // degrees per second
+        float angle = (float) ((elapsedTime) * rotationSpeed);
+        rotateHeadAround.setTransform(Mat4Transform.rotateAroundY(angle));
+        rotateHeadAround.update();
     }
 }

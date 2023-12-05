@@ -81,7 +81,20 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private Boolean spotlightOn = true;
 
+    private Boolean toggleRock = false;
+
+    private Boolean toggleRoll = false;
+
     private Boolean lightsHaveChanged = true;
+
+    private double startRollTime;
+
+    private double startRockTime;
+
+    private double rockElapsedTime = 0;
+
+    private double endRockTime = 0;
+
 
     private HashMap<String,Light> lightsMap = new HashMap<>();
 
@@ -92,8 +105,6 @@ public class Aliens_GLEventListener implements GLEventListener{
 
         textures = new TextureLibrary();
         textures.add(gl, "chequerboard", "textures/chequerboard.jpg");
-
-        startTime = getSeconds();
         //Top left general light
         // floor
         /*String name = "floor";
@@ -116,6 +127,24 @@ public class Aliens_GLEventListener implements GLEventListener{
         alien1.updateLights(lights);
         alien2.updateLights(lights);
         spotlight.updateLights(lights);
+        spotlight.updateRotation(getSeconds()-startTime);
+
+        if (toggleRock){
+            alien1.rock(getSeconds() - startRockTime);
+            alien2.rock(getSeconds() - startRockTime);
+        }else {
+            alien1.stopRock();
+            alien2.stopRock();
+        }
+
+        if (toggleRoll){
+            alien1.roll(getSeconds() - startRockTime);
+            alien2.roll(getSeconds() - startRockTime);
+        }else {
+            alien1.stopRoll();
+            alien2.stopRoll();
+        }
+
         // changing light position each frame
         //floor.render(gl);
         alien1.render(gl);
@@ -159,6 +188,17 @@ public class Aliens_GLEventListener implements GLEventListener{
     public void toggleSpotlight(){
         spotlightOn = !spotlightOn;
     }
+    public void toggleRock(){
+        if (!toggleRock){
+            startRockTime = getSeconds();
+            toggleRock = true;
+        }else {
+            toggleRock = false;
+        }
+    }
+    public void toggleRoll(){
+        toggleRoll = !toggleRoll;
+    }
 
     public void lightsHaveChanged(){
         lightsHaveChanged = true;
@@ -166,15 +206,6 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     public Boolean getSpotlightOn(){
         return spotlightOn;
-    }
-    private float getRotationAngle() {
-        double elapsedTime = getSeconds() - startTime;  // getSeconds() should return the current time in seconds
-        double rotationPeriod = 2.0;  // period of rotation in seconds
-        double anglePerSecond = 360.0 / rotationPeriod;  // how much the angle changes per second
-
-        // Calculate current angle
-        double currentAngle = (elapsedTime * anglePerSecond) % 360.0;  // Use modulus to loop the angle
-        return (float) currentAngle;
     }
 
     private void updateLights(GL3 gl) {
