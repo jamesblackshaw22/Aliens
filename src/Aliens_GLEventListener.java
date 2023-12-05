@@ -2,6 +2,8 @@ import gmaths.*;
 
 import com.jogamp.opengl.*;
 
+import java.util.HashMap;
+
 public class Aliens_GLEventListener implements GLEventListener{
 
     private static final boolean DISPLAY_SHADERS = false;
@@ -48,8 +50,11 @@ public class Aliens_GLEventListener implements GLEventListener{
     /* Clean up memory, if necessary */
     public void dispose(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
-        light.dispose(gl);
-        floor.dispose(gl);
+        //lights[0].dispose(gl);
+        //lights[1].dispose(gl);
+        //lights[2].dispose(gl);
+        //floor.dispose(gl);
+        alien1.dispose(gl);
     }
 
     // ***************************************************
@@ -64,13 +69,23 @@ public class Aliens_GLEventListener implements GLEventListener{
     private Camera camera;
     private Mat4 perspective;
     private Model floor;
-    private Light light;
-
     private SGNode alienRoot;
 
     private Alien alien1, alien2;
 
     private Spotlight spotlight;
+
+    private Boolean light1On = true;
+
+    private  Boolean light2On = true;
+
+    private Boolean spotlightOn = true;
+
+    private Boolean lightsHaveChanged = true;
+
+    private HashMap<String,Light> lightsMap = new HashMap<>();
+
+    private Light[] lights;
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -78,9 +93,8 @@ public class Aliens_GLEventListener implements GLEventListener{
         textures = new TextureLibrary();
         textures.add(gl, "chequerboard", "textures/chequerboard.jpg");
 
-        light = new Light(gl);
-        light.setCamera(camera);
-
+        startTime = getSeconds();
+        //Top left general light
         // floor
         /*String name = "floor";
         Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -89,14 +103,20 @@ public class Aliens_GLEventListener implements GLEventListener{
         Mat4 modelMatrix = Mat4Transform.scale(16,1f,16);
         floor = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("chequerboard"));*/
 
-        alien1 = new Alien(gl, camera, light, textures.get("chequerboard"),-4f);
-        alien2 = new Alien(gl, camera, light, textures.get("chequerboard"),4f);
-        spotlight = new Spotlight(gl, camera, light, textures.get("chequerboard"),-15f);
+        alien1 = new Alien(gl, camera, lights, textures.get("chequerboard"),-4f);
+        alien2 = new Alien(gl, camera, lights, textures.get("chequerboard"),4f);
+        spotlight = new Spotlight(gl, getSpotlightOn(), camera, lights, textures.get("chequerboard"),-15f);
     }
 
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        light.setPosition(new Vec3(15f,15f,0f));  // changing light position each frame
+
+        if (lightsHaveChanged) updateLights(gl);
+        lights = lightsMap.values().toArray(new Light[0]);
+        alien1.updateLights(lights);
+        alien2.updateLights(lights);
+        spotlight.updateLights(lights);
+        // changing light position each frame
         //floor.render(gl);
         alien1.render(gl);
         alien2.render(gl);
@@ -128,4 +148,66 @@ public class Aliens_GLEventListener implements GLEventListener{
         }
     }
 
+    public void toggleLight1(){
+        light1On = !light1On;
+    }
+
+    public void toggleLight2(){
+        light2On = !light2On;
+    }
+
+    public void toggleSpotlight(){
+        spotlightOn = !spotlightOn;
+    }
+
+    public void lightsHaveChanged(){
+        lightsHaveChanged = true;
+    }
+
+    public Boolean getSpotlightOn(){
+        return spotlightOn;
+    }
+    private float getRotationAngle() {
+        double elapsedTime = getSeconds() - startTime;  // getSeconds() should return the current time in seconds
+        double rotationPeriod = 2.0;  // period of rotation in seconds
+        double anglePerSecond = 360.0 / rotationPeriod;  // how much the angle changes per second
+
+        // Calculate current angle
+        double currentAngle = (elapsedTime * anglePerSecond) % 360.0;  // Use modulus to loop the angle
+        return (float) currentAngle;
+    }
+
+    private void updateLights(GL3 gl) {
+        if (light1On) {
+            if (!lightsMap.containsKey("light1")) {
+                lightsMap.put("light1",new Light(gl));
+                lightsMap.get("light1").setCamera(camera);
+                lightsMap.get("light1").setPosition(new Vec3(50f,15f,0f));
+            }
+        } else {
+            lightsMap.remove("light1");
+        }
+
+        if (light2On) {
+            if (!lightsMap.containsKey("light2")) {
+                lightsMap.put("light2",new Light(gl));
+                lightsMap.get("light2").setCamera(camera);
+                lightsMap.get("light2").setPosition(new Vec3(-50f,-15f,0f));
+            }
+        } else {
+            lightsMap.remove("light2");
+        }
+
+        if (spotlightOn) {
+            if (!lightsMap.containsKey("spotlight")) {
+                lightsMap.put("spotlight",new Light(gl));
+                lightsMap.get("spotlight").setCamera(camera);
+                lightsMap.get("spotlight").setPosition(spotlight.getLightPosition());
+            }
+        } else {
+            lightsMap.remove("spotlight");
+        }
+        lights = lightsMap.values().toArray(new Light[0]); // Update the lights array
+        lightsHaveChanged = false;
+    }
 }

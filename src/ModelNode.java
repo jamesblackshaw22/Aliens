@@ -2,9 +2,9 @@ import com.jogamp.opengl.GL3;
 
 public class ModelNode extends SGNode {
 
-  protected Model model;
+  protected ModelMultipleLights model;
 
-  public ModelNode(String name, Model m) {
+  public ModelNode(String name, ModelMultipleLights m) {
     super(name);
     model = m; 
   }
@@ -14,6 +14,10 @@ public class ModelNode extends SGNode {
     for (int i=0; i<children.size(); i++) {
       children.get(i).draw(gl);
     }
+  }
+
+  public void updateLights(Light[] lights){
+    model.setLights(lights);
   }
 
 }

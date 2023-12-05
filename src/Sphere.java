@@ -7,7 +7,6 @@ public final class Sphere {
  
   private static final int XLONG = 30;
   private static final int YLAT = 30;
-  
   public static final float[] vertices = createVertices();
   public static final int[] indices = createIndices();
 

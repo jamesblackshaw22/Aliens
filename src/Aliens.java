@@ -34,8 +34,17 @@ public class Aliens extends JFrame implements ActionListener{
         canvas.addKeyListener(new MyKeyboardInput(camera));
         getContentPane().add(canvas, BorderLayout.CENTER);
 
-        JMenuItem quitItem = new JMenuItem("Quit");
-        quitItem.addActionListener(this);
+        JPanel p = new JPanel();
+        JButton b = new JButton("Light Switch 1");
+        b.addActionListener(this);
+        p.add(b);
+        b = new JButton("Light Switch 2");
+        b.addActionListener(this);
+        p.add(b);
+        b = new JButton("Spotlight");
+        b.addActionListener(this);
+        p.add(b);
+        this.add(p, BorderLayout.SOUTH);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -49,9 +58,19 @@ public class Aliens extends JFrame implements ActionListener{
         animator.start();
     }
 
+
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equalsIgnoreCase("quit"))
-            System.exit(0);
+        if(e.getActionCommand().equalsIgnoreCase("light switch 1")){
+            glEventListener.toggleLight1();
+            glEventListener.lightsHaveChanged();
+        } else if (e.getActionCommand().equalsIgnoreCase("light switch 2")){
+            glEventListener.toggleLight2();
+            glEventListener.lightsHaveChanged();
+        } else if (e.getActionCommand().equalsIgnoreCase("spotlight")){
+            glEventListener.toggleSpotlight();
+            glEventListener.lightsHaveChanged();
+        }
+
     }
 
 }

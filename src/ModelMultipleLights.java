@@ -2,6 +2,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.texture.Texture;
 import gmaths.Mat4;
+import gmaths.Vec3;
 
 public class ModelMultipleLights {
 
@@ -14,6 +15,7 @@ public class ModelMultipleLights {
   private Light[] lights;
   private Texture diffuse;
   private Texture specular;
+  private Vec3 position;
 
   public ModelMultipleLights() {
     name = null;

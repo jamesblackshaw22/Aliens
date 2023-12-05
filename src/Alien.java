@@ -15,21 +15,23 @@ import javax.xml.namespace.QName;
 
 public class Alien {
     private Camera camera;
-    private Light light;
-    private Model sphere;
+    private Light[] lights;
+    private ModelMultipleLights sphere;
     private SGNode alienRoot;
     private float xPosition = 0;
 
+    private ModelNode[] allModels = new ModelNode[10];
+
     private TransformNode translateX, alienMoveTranslate;
 
-    public Alien(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, float xPos){
+    public Alien(GL3 gl, Camera cameraIn,  Light[] lightsIn, Texture t1, float xPos){
 
 
         this.camera = cameraIn;
-        this.light = lightIn;
+        this.lights = lightsIn;
         this.xPosition = xPos;
 
-        sphere = makeSphere(gl, t1);
+        sphere = makeSphere(gl, t1, false);
 
         float alienBodyScale = 5f;
         float alienHeadScale = 3.5f;
@@ -48,6 +50,7 @@ public class Alien {
         Mat4 m = Mat4Transform.scale(alienBodyScale,alienBodyScale,alienBodyScale);
         TransformNode bodyTransform = new TransformNode("body transform", m);
         ModelNode bodyShape = new ModelNode("Sphere(body)", sphere);
+        allModels[0] = bodyShape;
 
         //Right arm Shape
         NameNode rightArm = new NameNode("rightArm");
@@ -56,11 +59,13 @@ public class Alien {
         m = Mat4.multiply(m,Mat4Transform.scale(alienArmWidth,alienArmHeight,alienArmDepth));
         TransformNode rightArmTransform = new TransformNode("rightArm transform", m);
         ModelNode rightArmShape = new ModelNode("Sphere(rightArm)", sphere);
+        allModels[1] = rightArmShape;
 
         //Right arm positioning
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.translate(alienBodyScale * 0.6f, alienBodyScale * 0.35f, 0));
         TransformNode rightArmTranslate = new TransformNode("rightArm translate", m);
+
 
         //Left arm Shape
         NameNode leftArm = new NameNode("leftArm");
@@ -69,11 +74,13 @@ public class Alien {
         m = Mat4.multiply(m,Mat4Transform.scale(alienArmWidth,alienArmHeight,alienArmDepth));
         TransformNode leftArmTransform = new TransformNode("leftArm transform", m);
         ModelNode leftArmShape = new ModelNode("Sphere(leftArm)", sphere);
+        allModels[2] = leftArmShape;
 
         //Left arm positioning
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.translate(-(alienBodyScale * 0.6f), alienBodyScale * 0.35f, 0));
         TransformNode leftArmTranslate = new TransformNode("leftArm translate", m);
+
 
         //Head Shape
         NameNode head = new NameNode("head");
@@ -81,11 +88,13 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(alienHeadScale,alienHeadScale,alienHeadScale));
         TransformNode headTransform = new TransformNode("head transform", m);
         ModelNode headShape = new ModelNode("Sphere(head)", sphere);
+        allModels[3] = headShape;
 
         //Head Positioning
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.translate(0,alienBodyScale /2 + alienHeadScale/2 , 0));
         TransformNode headTranslate = new TransformNode("head translate", m);
+
 
         //Right ear Shape
         NameNode rightEar = new NameNode("rightEar");
@@ -93,6 +102,8 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(alienHeadScale / 11, alienHeadScale * 0.8f,alienHeadScale /2));
         TransformNode rightEarTransform = new TransformNode("right ear transform", m);
         ModelNode rightEarShape = new ModelNode("Sphere(right ear)", sphere);
+
+        allModels[4] = rightEarShape;
 
         //Right ear positioning
         m = new Mat4(1);
@@ -105,6 +116,7 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(alienHeadScale / 11, alienHeadScale * 0.8f,alienHeadScale /2));
         TransformNode leftEarTransform = new TransformNode("left ear transform", m);
         ModelNode leftEarShape = new ModelNode("Sphere(left ear)", sphere);
+        allModels[5] = leftEarShape;
 
         //Right ear positioning
         m = new Mat4(1);
@@ -118,6 +130,7 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(alienHeadScale / 5, alienHeadScale / 7,alienHeadScale / 10));
         TransformNode rightEyeTransform = new TransformNode("right eye transform", m);
         ModelNode rightEyeShape = new ModelNode("Sphere(right eye)", sphere);
+        allModels[6] = rightEyeShape;
 
         //Right eye positioning
         m = new Mat4(1);
@@ -131,6 +144,7 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(alienHeadScale / 5, alienHeadScale / 7,alienHeadScale / 10));
         TransformNode leftEyeTransform = new TransformNode("left eye transform", m);
         ModelNode leftEyeShape = new ModelNode("Sphere(left eye)", sphere);
+        allModels[7] = leftEyeShape;
 
         //left eye positioning
         m = new Mat4(1);
@@ -154,6 +168,7 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(antennaBaseWidth, antennaBaseHeight,antennaBaseWidth));
         TransformNode antennaBaseTransform = new TransformNode("antenna base transform", m);
         ModelNode antennaBaseShape = new ModelNode("Sphere(antennaBase)", sphere);
+        allModels[8] = antennaBaseShape;
 
         //Antenna Base positioning
         m = new Mat4(1);
@@ -166,6 +181,7 @@ public class Alien {
         m = Mat4.multiply(m, Mat4Transform.scale(antennaTopScale, antennaTopScale,antennaTopScale));
         TransformNode antennaTopTransform = new TransformNode("antenna top transform", m);
         ModelNode antennaTopShape = new ModelNode("Sphere(antennaBase)", sphere);
+        allModels[9] = antennaTopShape;
 
         //Antenna Top positioning
         m = new Mat4(1);
@@ -223,19 +239,32 @@ public class Alien {
 
     }
 
-    private Model makeSphere(GL3 gl, Texture t1){
+    private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Boolean isLight){
         String name = "sphere";
         Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 
-        Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_1t.txt");
+        //change to multiple lights
+        Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_m_1t.txt");
 
         Material material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
         Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-        return new Model(name, mesh, modelMatrix, shader, material, light, camera, t1);
+        return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
     }
+
+
 
     public void render(GL3 gl){
         alienRoot.draw(gl);
     }
 
+    public void dispose(GL3 gl) {
+        sphere.dispose(gl);
+    }
+
+    public void updateLights(Light[]lights){
+        this.lights = lights;
+        for (ModelNode node : allModels){
+            node.updateLights(lights);
+        }
+    }
 }

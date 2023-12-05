@@ -18,6 +18,10 @@ public class SGNode {
   public void addChild(SGNode child) {
     children.add(child);
   }
+
+  public void removeChild(SGNode child) {
+    children.remove(child);
+  }
   
   public void update() {
     update(worldTransform);
