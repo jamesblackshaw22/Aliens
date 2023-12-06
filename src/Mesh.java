@@ -29,6 +29,14 @@ public class Mesh {
     gl.glBindVertexArray(0);
   }
 
+  public void bindArray(GL3 gl){
+    gl.glBindVertexArray(vertexArrayId[0]);
+  }
+
+  public void drawElements(GL3 gl){
+    gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+  }
+
   private void fillBuffers(GL3 gl) {
     gl.glGenVertexArrays(1, vertexArrayId, 0);
     gl.glBindVertexArray(vertexArrayId[0]);

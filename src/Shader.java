@@ -1,6 +1,7 @@
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
+import gmaths.Mat4;
 import gmaths.Vec3;
 
 import java.io.IOException;
@@ -101,4 +102,6 @@ public class Shader {
     return program.program();
   }
 
+    public void setUniformMat4(GL3 gl, String projection, Mat4 perspectiveMatrix) {
+    }
 }

@@ -18,13 +18,12 @@ public class TextureLibrary {
     Texture texture = loadTexture(gl, filename);
     textures.put(name, texture);
   }
-
   public Texture get(String name) {
     return textures.get(name);
   }
 
   // no mip-mapping (see below for mip-mapping)
-  public Texture loadTexture(GL3 gl3, String filename) {
+  /*public Texture loadTexture(GL3 gl3, String filename) {
     Texture t = null; 
     try {
       File f = new File(filename);
@@ -39,10 +38,10 @@ public class TextureLibrary {
       System.out.println("Error loading texture " + filename); 
     }
     return t;
-  }
+  }*/
 
   // mip-mapping is included in the below example
-  /*public static Texture loadTexture(GL3 gl3, String filename) {
+  public static Texture loadTexture(GL3 gl3, String filename) {
     Texture t = null; 
     try {
       File f = new File(filename);
@@ -59,7 +58,6 @@ public class TextureLibrary {
     }
     return t;
   }
-*/
 
   public void destroy(GL3 gl3) {
     for (var entry : textures.entrySet()) {

@@ -73,6 +73,8 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private Alien alien1, alien2;
 
+    private Skybox skybox;
+
     private Spotlight spotlight;
 
     private Boolean light1On = true;
@@ -105,18 +107,43 @@ public class Aliens_GLEventListener implements GLEventListener{
 
         textures = new TextureLibrary();
         textures.add(gl, "chequerboard", "textures/chequerboard.jpg");
+        textures.add(gl, "negx", "textures/negx.jpg");
+        textures.add(gl, "posx", "textures/posx.jpg");
+        textures.add(gl, "posy", "textures/posy.jpg");
+        textures.add(gl, "negy", "textures/negy.jpg");
+        textures.add(gl, "negz", "textures/negz.jpg");
+        textures.add(gl, "posz", "textures/posz.jpg");
+        textures.add(gl, "attachment", "textures/attachment.jpg");
+        textures.add(gl, "spotBase", "textures/spotBase.jpg");
+
+
+        startTime = getSeconds();
         //Top left general light
+        lightsMap.put("light1",new Light(gl));
+        lightsMap.get("light1").setCamera(camera);
+        lightsMap.get("light1").setPosition(new Vec3(50f,15f,0f));
+        //Spotlight
+        lightsMap.put("light2",new Light(gl));
+        lightsMap.get("light2").setCamera(camera);
+        lightsMap.get("light2").setPosition(new Vec3(-50f,-15f,0f));
+
+        lightsMap.put("spotlight",new Light(gl));
+        lightsMap.get("spotlight").setCamera(camera);
+        lights = lightsMap.values().toArray(new Light[0]);
         // floor
         /*String name = "floor";
         Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
         Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_1t.txt");
         Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
         Mat4 modelMatrix = Mat4Transform.scale(16,1f,16);
-        floor = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("chequerboard"));*/
+//        floor = new Model(name, mesh, modelMatrix, shader, material, lights[1], camera, textures.get("chequerboard"));*/
 
         alien1 = new Alien(gl, camera, lights, textures.get("chequerboard"),-4f);
         alien2 = new Alien(gl, camera, lights, textures.get("chequerboard"),4f);
-        spotlight = new Spotlight(gl, getSpotlightOn(), camera, lights, textures.get("chequerboard"),-15f);
+        spotlight = new Spotlight(gl, getSpotlightOn(), camera, lights, textures,-15f);
+        skybox = new Skybox(gl, camera, lights, textures);
+        lightsMap.get("spotlight").setPosition(spotlight.getLightPosition());
+
     }
 
     private void render(GL3 gl) {
@@ -124,6 +151,7 @@ public class Aliens_GLEventListener implements GLEventListener{
 
         if (lightsHaveChanged) updateLights(gl);
         lights = lightsMap.values().toArray(new Light[0]);
+        skybox.updateLights(lights);
         alien1.updateLights(lights);
         alien2.updateLights(lights);
         spotlight.updateLights(lights);
@@ -147,6 +175,7 @@ public class Aliens_GLEventListener implements GLEventListener{
 
         // changing light position each frame
         //floor.render(gl);
+        skybox.render(gl);
         alien1.render(gl);
         alien2.render(gl);
         spotlight.render(gl);
@@ -213,7 +242,7 @@ public class Aliens_GLEventListener implements GLEventListener{
             if (!lightsMap.containsKey("light1")) {
                 lightsMap.put("light1",new Light(gl));
                 lightsMap.get("light1").setCamera(camera);
-                lightsMap.get("light1").setPosition(new Vec3(50f,15f,0f));
+                lightsMap.get("light1").setPosition(new Vec3(10,20,0));
             }
         } else {
             lightsMap.remove("light1");
@@ -223,7 +252,7 @@ public class Aliens_GLEventListener implements GLEventListener{
             if (!lightsMap.containsKey("light2")) {
                 lightsMap.put("light2",new Light(gl));
                 lightsMap.get("light2").setCamera(camera);
-                lightsMap.get("light2").setPosition(new Vec3(-50f,-15f,0f));
+                lightsMap.get("light2").setPosition(new Vec3(-10f,20f,0f));
             }
         } else {
             lightsMap.remove("light2");
