@@ -24,14 +24,14 @@ public class Alien {
 
     private TransformNode translateX, alienMoveTranslate, alienRotate, headRoll;
 
-    public Alien(GL3 gl, Camera cameraIn,  Light[] lightsIn, Texture t1, float xPos){
+    public Alien(GL3 gl, Camera cameraIn,  Light[] lightsIn, TextureLibrary textures, float xPos){
 
 
         this.camera = cameraIn;
         this.lights = lightsIn;
         this.xPosition = xPos;
-
-        sphere = makeSphere(gl, t1, false);
+        Material alienBody = new Material(new Vec3(0.3f,0.3f,0.3f),new Vec3(0.2f, 0.2f, 0.2f),new Vec3(0.7f, 0.7f, 0.7f), 140.0f);
+        sphere = makeSphere(gl, textures.get("a"), alienBody);
 
         float alienBodyScale = 5f;
         float alienHeadScale = 3.5f;
@@ -60,6 +60,7 @@ public class Alien {
         bodyTranslate.addChild(bodyTransform);
             bodyTransform.addChild(bodyShape);
 
+        sphere = makeSphere(gl, textures.get("b"), alienBody);
         /*RIGHT ARM*/
         NameNode rightArm = new NameNode("rightArm");
         TransformNode rightArmTranslate = new TransformNode("rightArm translate", Mat4Transform.translate(alienBodyScale * 0.6f, alienBodyScale /2 * 0.6f, 0));
@@ -80,6 +81,8 @@ public class Alien {
         leftArmTranslate.addChild(leftArmTransform);
         leftArmTransform.addChild(leftArmShape);
 
+        sphere = makeSphere(gl, textures.get("a"), alienBody);
+
         /*HEAD*/
         NameNode head = new NameNode("head");
         TransformNode headTranslate = new TransformNode("head transform", Mat4Transform.translate(0, alienBodyScale/2, 0));
@@ -90,6 +93,8 @@ public class Alien {
         TransformNode headBaseTransform = new TransformNode("head transform", Mat4Transform.scale(alienHeadScale, alienHeadScale, alienHeadScale));
         ModelNode headBaseShape = new ModelNode("Sphere(head)", sphere);
         allModels[3] = headBaseShape;
+
+        sphere = makeSphere(gl, textures.get("b"), alienBody);
 
 
         /*RIGHT EAR*/
@@ -112,6 +117,9 @@ public class Alien {
         leftEarTranslate.addChild(leftEarTransform);
         leftEarTransform.addChild(leftEarShape);
 
+        sphere = makeSphere(gl, textures.get("c"), alienBody);
+
+
         /*RIGHT EYE*/
         NameNode rightEye = new NameNode("rightEye");
         TransformNode rightEyeTranslate = new TransformNode("right eye translate", Mat4Transform.translate(0.7f, alienHeadScale * 0.7f, 1.6f));
@@ -131,6 +139,9 @@ public class Alien {
         leftEye.addChild(leftEyeTranslate);
         leftEyeTranslate.addChild(leftEyeTransform);
         leftEyeTransform.addChild(leftEyeShape);
+
+
+        sphere = makeSphere(gl, textures.get("d"), alienBody);
 
         /*ANTENNA*/
         NameNode antenna = new NameNode("antenna");
@@ -188,14 +199,13 @@ public class Alien {
 
     }
 
-    private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Boolean isLight){
+    private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Material material){
         String name = "sphere";
         Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 
         //change to multiple lights
         Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_m_1t.txt");
 
-        Material material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
         Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
     }

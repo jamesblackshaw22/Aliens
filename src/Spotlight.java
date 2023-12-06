@@ -60,7 +60,7 @@ public class Spotlight {
 
         sphere = makeSphere(gl, textures.get("attachment"), lightTex);
         NameNode light = new NameNode("light");
-        TransformNode moveLightTranslate = new TransformNode("light translate", Mat4Transform.translate(1.3f, 0, 0));
+        TransformNode moveLightTranslate = new TransformNode("light translate", Mat4Transform.translate(1.5f, 0, 0));
         TransformNode lightTransform = new TransformNode("light transform", Mat4Transform.scale(0.75f, 0.75f, 0.75f));
         ModelNode lightShape = new ModelNode("Sphere(light)", sphere);
         allModels[2] = lightShape;
