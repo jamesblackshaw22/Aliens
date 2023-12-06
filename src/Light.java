@@ -13,7 +13,7 @@ public class Light {
 
   public Light(GL3 gl) {
     material = new Material();
-    material.setAmbient(0.15f, 0.15f, 0.15f);
+    material.setAmbient(0.1f, 0.1f, 0.1f);
     material.setDiffuse(0.1f, 0.1f, 0.1f);
     material.setSpecular(0.1f, 0.1f, 0.1f);
     position = new Vec3(3f,2f,1f);
@@ -22,6 +22,7 @@ public class Light {
     fillBuffers(gl);
     shader = new Shader(gl, "vs_light_01.txt", "fs_light_01.txt");
   }
+
 
   public void setPosition(Vec3 v) {
     position.x = v.x;

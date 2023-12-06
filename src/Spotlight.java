@@ -65,8 +65,8 @@ public class Spotlight {
         ModelNode lightShape = new ModelNode("Sphere(light)", sphere);
         allModels[2] = lightShape;
 
-
-        Vec3 initialLightPosition = new Vec3(xPosition + 1.3f, spotlightBaseHeight + 2, 0);
+        double lengthOfLight = 1.5;
+        Vec3 initialLightPosition = new Vec3(xPosition + 4.5f, 22 - (float) (Math.tan(lengthOfLight)*1.5), 0);
         setLightPosition(initialLightPosition);
 
         spotlightRoot.addChild(spotlightMoveTranslate);
@@ -100,6 +100,8 @@ public class Spotlight {
         Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
     }
+
+
 
     public void render(GL3 gl){
         spotlightRoot.draw(gl);

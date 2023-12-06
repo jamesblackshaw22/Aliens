@@ -15,6 +15,8 @@ public class ModelMultipleLights {
   private Light[] lights;
   private Texture diffuse;
   private Texture specular;
+
+  private ModelMultipleLights spotlight;
   private Vec3 position;
 
   public ModelMultipleLights() {
@@ -86,6 +88,14 @@ public class ModelMultipleLights {
     this.specular = t;
   }
 
+  public void setPosition(Vec3 position){
+    this.position = position;
+  }
+
+  public Vec3 getPosition(){
+    return position;
+  }
+
   public void renderName(GL3 gl) {
     System.out.println("Name = " + name);
   }
@@ -110,12 +120,16 @@ public class ModelMultipleLights {
 
     shader.setInt(gl,"numLights", lights.length);
 
+    int temp = 0;
     for (int i=0; i<lights.length; i++) {
+      temp++;
       shader.setVec3(gl, "lights["+i+"].position", lights[i].getPosition());
       shader.setVec3(gl, "lights["+i+"].ambient", lights[i].getMaterial().getAmbient());
       shader.setVec3(gl, "lights["+i+"].diffuse", lights[i].getMaterial().getDiffuse());
       shader.setVec3(gl, "lights["+i+"].specular", lights[i].getMaterial().getSpecular());
     }
+
+
 
     shader.setVec3(gl, "material.ambient", material.getAmbient());
     shader.setVec3(gl, "material.diffuse", material.getDiffuse());

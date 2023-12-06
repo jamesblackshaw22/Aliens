@@ -109,27 +109,27 @@ public class Aliens_GLEventListener implements GLEventListener{
         createRandomNumbers();
 
         texturesSpotlightRoom = new TextureLibrary();
-        texturesSpotlightRoom.add(gl, "chequerboard", "textures/chequerboard.jpg");
-        texturesSpotlightRoom.add(gl, "negx", "textures/negx.jpg");
-        texturesSpotlightRoom.add(gl, "posx", "textures/posx.jpg");
-        texturesSpotlightRoom.add(gl, "posy", "textures/posy.jpg");
-        texturesSpotlightRoom.add(gl, "negy", "textures/negy.jpg");
-        texturesSpotlightRoom.add(gl, "negz", "textures/negz.jpg");
-        texturesSpotlightRoom.add(gl, "posz", "textures/posz.jpg");
-        texturesSpotlightRoom.add(gl, "attachment", "textures/attachment.jpg");
-        texturesSpotlightRoom.add(gl, "spotBase", "textures/spotBase.jpg");
+        texturesSpotlightRoom.add(gl, "chequerboard", "chequerboard.jpg");
+        texturesSpotlightRoom.add(gl, "negx", "negx.jpg");
+        texturesSpotlightRoom.add(gl, "posx", "posx.jpg");
+        texturesSpotlightRoom.add(gl, "posy", "posy.jpg");
+        texturesSpotlightRoom.add(gl, "negy", "negy.jpg");
+        texturesSpotlightRoom.add(gl, "negz", "negz.jpg");
+        texturesSpotlightRoom.add(gl, "posz", "posz.jpg");
+        texturesSpotlightRoom.add(gl, "attachment", "attachment.jpg");
+        texturesSpotlightRoom.add(gl, "spotBase", "spotBase.jpg");
 
         texturesAlien1 = new TextureLibrary();
-        texturesAlien1.add(gl, "a", "textures/alien1a.jpg");
-        texturesAlien1.add(gl, "b", "textures/alien1b.jpg");
-        texturesAlien1.add(gl, "c", "textures/alien1c.jpg");
-        texturesAlien1.add(gl, "d", "textures/alien1d.jpg");
+        texturesAlien1.add(gl, "a", "alien1a.jpg");
+        texturesAlien1.add(gl, "b", "alien1b.jpg");
+        texturesAlien1.add(gl, "c", "alien1c.jpg");
+        texturesAlien1.add(gl, "d", "alien1d.jpg");
 
         texturesAlien2 = new TextureLibrary();
-        texturesAlien2.add(gl, "a", "textures/alien2a.jpg");
-        texturesAlien2.add(gl, "b", "textures/alien2b.jpg");
-        texturesAlien2.add(gl, "c", "textures/alien2c.jpg");
-        texturesAlien2.add(gl, "d", "textures/alien2d.jpg");
+        texturesAlien2.add(gl, "a", "alien2a.jpg");
+        texturesAlien2.add(gl, "b", "alien2b.jpg");
+        texturesAlien2.add(gl, "c", "alien2c.jpg");
+        texturesAlien2.add(gl, "d", "alien2d.jpg");
 
 
         startTime = getSeconds();
@@ -189,11 +189,14 @@ public class Aliens_GLEventListener implements GLEventListener{
         }
 
         // changing light position each frame
+
         //floor.render(gl);
         skybox.render(gl);
         alien1.render(gl);
         alien2.render(gl);
         spotlight.render(gl);
+        lights[2].setPosition(new Vec3(-14f,21f,0f));
+        lights[2].render(gl);
     }
 
 
