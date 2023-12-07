@@ -14,8 +14,8 @@ public class Light {
   public Light(GL3 gl) {
     material = new Material();
     material.setAmbient(0.1f, 0.1f, 0.1f);
-    material.setDiffuse(0.1f, 0.1f, 0.1f);
-    material.setSpecular(0.1f, 0.1f, 0.1f);
+    material.setDiffuse(0.2f, 0.2f, 0.2f);
+    material.setSpecular(0.01f, 0.01f, 0.01f);
     position = new Vec3(3f,2f,1f);
     model = new Mat4(1);
 
@@ -56,21 +56,6 @@ public class Light {
     this.perspective = perspective;
   }*/
 
-  public void render(GL3 gl) { //, Mat4 perspective, Mat4 view) {
-    Mat4 model = new Mat4(1);
-    model = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), model);
-    model = Mat4.multiply(Mat4Transform.translate(position), model);
-
-    Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), model));
-
-    shader.use(gl);
-    shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
-
-    gl.glBindVertexArray(vertexArrayId[0]);
-
-    gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
-    gl.glBindVertexArray(0);
-  }
 
   public void dispose(GL3 gl) {
     gl.glDeleteBuffers(1, vertexBufferId, 0);
@@ -139,6 +124,5 @@ public class Light {
     IntBuffer ib = Buffers.newDirectIntBuffer(indices);
     gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, elementBufferId[0]);
     gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
-    //gl.glBindVertexArray(0);  // remove this so shader can be validated. Should be ok as any new object will bind its own VAO
   }
 }

@@ -1,5 +1,6 @@
 import com.jogamp.opengl.GL3;
 
+//Changed some of this I think
 public class ModelNode extends SGNode {
 
   protected ModelMultipleLights model;

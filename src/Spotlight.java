@@ -2,38 +2,36 @@ import gmaths.*;
 
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
-
+/* I declare that this code is my own work */
+/* Author <James Blackshaw> <jblackshaw1@sheffield.ac.uk> */
 
 public class Spotlight {
     private Camera camera;
     private Light[] lights;
 
-    private ModelMultipleLights sphere, lightSphere;
     private SGNode spotlightRoot;
 
     private Vec3 lightPosition;
-    private float xPosition = 0;
 
-    private ModelNode[] allModels = new ModelNode[3];
+    private final ModelNode[] allModels = new ModelNode[3];
 
-    private TransformNode translateX, spotlightMoveTranslate, rotateHeadAround;
+    private TransformNode rotateHeadAround;
 
 
-    public Spotlight(GL3 gl, Boolean isSpotlightOn, Camera cameraIn, Light[] lightsIn, TextureLibrary textures, float xPos){
+    public Spotlight(GL3 gl, Camera cameraIn, Light[] lightsIn, TextureLibrary textures, float xPos){
         this.camera = cameraIn;
         this.lights = lightsIn;
-        this.xPosition = xPos;
 
         Material spotlightBase = new Material(new Vec3(0.3f,0.3f,0.3f),new Vec3(0.2f, 0.2f, 0.2f),new Vec3(0.7f, 0.7f, 0.7f), 140.0f);
         Material lightTex = new Material(new Vec3(0.1f,0.1f,0.1f),new Vec3(0.6f, 0.6f, 0.6f),new Vec3(0.2f, 0.2f, 0.2f), 30f);
 
-        sphere = makeSphere(gl, textures.get("spotBase"), spotlightBase);
+        ModelMultipleLights sphere = makeSphere(gl, textures.get("spotBase"), spotlightBase);
 
         float spotlightBaseHeight = 20f;
         float spotlightBaseWidth = 0.6f;
 
         spotlightRoot = new NameNode("root");
-        TransformNode spotlightMoveTranslate = new TransformNode("spotlight transform", Mat4Transform.translate(xPosition, 2f , 0));
+        TransformNode spotlightMoveTranslate = new TransformNode("spotlight transform", Mat4Transform.translate(xPos, 2f , 0));
 
         /*BASE*/
         NameNode base = new NameNode("base");
@@ -65,8 +63,7 @@ public class Spotlight {
         ModelNode lightShape = new ModelNode("Sphere(light)", sphere);
         allModels[2] = lightShape;
 
-        double lengthOfLight = 1.5;
-        Vec3 initialLightPosition = new Vec3(xPosition + 4.5f, 22 - (float) (Math.tan(lengthOfLight)*1.5), 0);
+        Vec3 initialLightPosition = new Vec3(-14,21,0);
         setLightPosition(initialLightPosition);
 
         spotlightRoot.addChild(spotlightMoveTranslate);

@@ -2,13 +2,11 @@ import gmaths.*;
 
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
+public class Environment {
 
-public class Skybox {
-
-    private ModelMultipleLights[] wall;
     private Camera camera;
     private Light[] lights;
-    private float size = 40f;
+    private float size = 45f;
     private ModelNode[] allModels = new ModelNode[5];
 
     ModelNode negXModel;
@@ -18,11 +16,12 @@ public class Skybox {
     private SGNode skyboxRoot;
 
     TextureLibrary textures;
-    public Skybox(GL3 gl, Camera camera, Light[] lights, TextureLibrary textures) {
+    public Environment(GL3 gl, Camera camera, Light[] lights, TextureLibrary textures) {
         this.camera = camera;
         this.lights = lights;
         this.textures = textures;
 
+        //new SG for environment
 
         skyboxRoot = new NameNode("root");
         //FLOOR
@@ -87,29 +86,12 @@ public class Skybox {
             movePosZ.addChild(rotatePosZ);
                 rotatePosZ.addChild(scalePosZ);
                     scalePosZ.addChild(posZModel);
-
-
         skyboxRoot.update();
-
-
-        //wall[0] = negx(gl, textures.get("negx"));
-        //wall[0] = negy(gl, textures.get("negy"));
-       // wall[2] = negz(gl, textures.get("negz"));
-       // wall[3] = posx(gl, textures.get("posx"));
-       // wall[4] = posy(gl, textures.get("posy"));
-       // wall[5] = posz(gl, textures.get("posz"));
     }
 
     // There is repetion in each of the following methods
     // An alternative would attempt to remove the repetition
 
-
-
-    public void dispose(GL3 gl) {
-        for (int i=0; i<3; i++) {
-            wall[i].dispose(gl);
-        }
-    }
 
     public void updateLights(Light[]lights){
         this.lights = lights;
@@ -122,8 +104,8 @@ public class Skybox {
         String name = "wall";
         Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
         Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_m_1t.txt");
-        Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f); // grey
-        Material material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
+        Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f);
+        Material material = new Material(basecolor,new Vec3(0.05f,0.05f,0.05f), new Vec3(0f, 0.0f, 0.0f), 1.0f);
         Mat4 modelMatrix = new Mat4(1);
 
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
@@ -133,15 +115,15 @@ public class Skybox {
         String name = "wall";
         Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
         Shader shader = new Shader(gl, "vs_walls.txt", "fs_walls.txt");
-        Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f); // grey
-        Material material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
+        Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f);
+        Material material = new Material(basecolor,new Vec3(0.05f,0.05f,0.05f), new Vec3(0.01f, 0.01f, 0.01f), 1.0f);
         Mat4 modelMatrix = new Mat4(1);
 
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, snow, offset);
     }
 
     public void render(GL3 gl, double elapsedTime){
-        double t = elapsedTime*0.1;  // *0.1 slows it down a bit
+        double t = elapsedTime*0.1;
         float offsetY = (float)(t - Math.floor(t));
         float offsetX = 0.0f;
         Vec2 offset = new Vec2(offsetX,offsetY);

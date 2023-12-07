@@ -6,15 +6,15 @@ import com.jogamp.opengl.util.FPSAnimator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+//Modified from Robot class in Lab class
 
 public class Aliens extends JFrame implements ActionListener{
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 768;
     private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
-    private GLCanvas canvas;
-    private Aliens_GLEventListener glEventListener;
+    private final GLCanvas canvas;
+    private final Aliens_GLEventListener glEventListener;
     private final FPSAnimator animator;
-    private Camera camera;
 
     public static void main(String[] args) {
         Aliens b1 = new Aliens("Aliens");
@@ -27,7 +27,7 @@ public class Aliens extends JFrame implements ActionListener{
         super(textForTitleBar);
         GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
         canvas = new GLCanvas(glcapabilities);
-        camera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
+        Camera camera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
         glEventListener = new Aliens_GLEventListener(camera);
         canvas.addGLEventListener(glEventListener);
         canvas.addMouseMotionListener(new MyMouseInput(camera));
@@ -80,13 +80,11 @@ public class Aliens extends JFrame implements ActionListener{
         }else if (e.getActionCommand().equalsIgnoreCase("toggle roll")){
             glEventListener.toggleRoll();
         }
-
     }
-
 }
 
 class MyKeyboardInput extends KeyAdapter  {
-    private Camera camera;
+    private final Camera camera;
 
     public MyKeyboardInput(Camera camera) {
         this.camera = camera;
@@ -108,7 +106,7 @@ class MyKeyboardInput extends KeyAdapter  {
 
 class MyMouseInput extends MouseMotionAdapter {
     private Point lastpoint;
-    private Camera camera;
+    private final Camera camera;
 
     public MyMouseInput(Camera camera) {
         this.camera = camera;

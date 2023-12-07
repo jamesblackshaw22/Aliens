@@ -5,6 +5,7 @@ import gmaths.Mat4;
 import gmaths.Vec2;
 import gmaths.Vec3;
 
+//Taken from lab classes modified some parts.
 public class ModelMultipleLights {
 
   private String name;
@@ -23,16 +24,6 @@ public class ModelMultipleLights {
   private Vec3 position;
 
   private Vec2 offset;
-
-  public ModelMultipleLights() {
-    name = null;
-    mesh = null;
-    modelMatrix = null;
-    material = null;
-    camera = null;
-    lights = null;
-    shader = null;
-  }
 
   public ModelMultipleLights(String name, Mesh mesh, Mat4 modelMatrix, Shader shader, Material material, Light[] lights,
                              Camera camera, Texture diffuse, Texture specular) {
@@ -69,36 +60,8 @@ public class ModelMultipleLights {
     this.name = s;
   }
 
-  public void setMesh(Mesh m) {
-    this.mesh = m;
-  }
-
-  public void setModelMatrix(Mat4 m) {
-    modelMatrix = m;
-  }
-
-  public void setMaterial(Material material) {
-    this.material = material;
-  }
-
-  public void setShader(Shader shader) {
-    this.shader = shader;
-  }
-
-  public void setCamera(Camera camera) {
-    this.camera = camera;
-  }
-
   public void setLights(Light[] lights) {
     this.lights = lights;
-  }
-
-  public void setDiffuse(Texture t) {
-    this.diffuse = t;
-  }
-
-  public void setSpecular(Texture t) {
-    this.specular = t;
   }
 
   public void setPosition(Vec3 position){
@@ -107,14 +70,6 @@ public class ModelMultipleLights {
 
   public Vec3 getPosition(){
     return position;
-  }
-
-  public void renderName(GL3 gl) {
-    System.out.println("Name = " + name);
-  }
-
-  public void render(GL3 gl) {
-    render(gl, modelMatrix);
   }
 
   // second version of render is so that modelMatrix can be overriden with a new parameter
@@ -160,6 +115,7 @@ public class ModelMultipleLights {
       specular.bind(gl);
     }
 
+    //added
     if (snow!= null){
       shader.setInt(gl, "snow_texture", 1);
       shader.setFloat(gl,"offset", offset.x, offset.y);
@@ -179,6 +135,7 @@ public class ModelMultipleLights {
     mesh.dispose(gl);  // only need to dispose of mesh
   }
 
+  //added
   public void setOffset(Vec2 offset) {
     this.offset = offset;
   }

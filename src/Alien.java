@@ -12,15 +12,20 @@ public class Alien {
 
     private ModelNode[] allModels = new ModelNode[10];
 
-    private TransformNode translateX, alienMoveTranslate, alienRotate, headRoll;
+    private TransformNode alienMoveTranslate, alienRotate, headRoll;
 
-    public Alien(GL3 gl, Camera cameraIn,  Light[] lightsIn, TextureLibrary textures, float xPos){
+    public Alien(GL3 gl, Camera cameraIn,  Light[] lightsIn, TextureLibrary textures, float xPos, boolean isAlien1){
 
 
         this.camera = cameraIn;
         this.lights = lightsIn;
         this.xPosition = xPos;
-        Material alienBody = new Material(new Vec3(0.3f,0.3f,0.3f),new Vec3(0.2f, 0.2f, 0.2f),new Vec3(0.7f, 0.7f, 0.7f), 140.0f);
+        Material alienBody;
+        if (isAlien1){
+            alienBody = new Material(new Vec3(0.3f,0.3f,0.3f),new Vec3(0.5f, 0.5f, 0.5f),new Vec3(0.9f, 0.9f, 0.9f), 50.0f);
+        }else {
+            alienBody = new Material(new Vec3(0.3f,0.3f,0.3f),new Vec3(0.9f, 0.9f, 0.9f),new Vec3(0.01f, 0.01f, 0.01f), 1.0f);
+        }
         sphere = makeSphere(gl, textures.get("a"), alienBody);
 
         float alienBodyScale = 5f;
@@ -33,12 +38,10 @@ public class Alien {
         float antennaBaseWidth = 0.2f;
 
 
+        //Overall Movement
         alienRoot = new NameNode("root");
         alienMoveTranslate = new TransformNode("alien transform", Mat4Transform.translate(xPosition,alienBodyScale,0));
         alienRotate = new TransformNode("body transform", Mat4Transform.rotateAroundZ(0));
-
-
-        //TransformNode alienTranslate = new TransformNode("alien transform",Mat4Transform.translate(0,0,0));
 
         /*BODY*/
         NameNode body = new NameNode("body");
@@ -129,8 +132,6 @@ public class Alien {
         leftEye.addChild(leftEyeTranslate);
         leftEyeTranslate.addChild(leftEyeTransform);
         leftEyeTransform.addChild(leftEyeShape);
-
-
         sphere = makeSphere(gl, textures.get("d"), alienBody);
 
         /*ANTENNA*/
@@ -167,10 +168,8 @@ public class Alien {
         alienRotate.addChild(body);
         alienRotate.addChild(rightArm);
         alienRotate.addChild(leftArm);
-
         body.addChild(head);
         head.addChild(headRoll);
-
         headRoll.addChild(headTranslate);
         headTranslate.addChild(headBase);
             headBase.addChild(headBaseTranslate);
@@ -181,10 +180,6 @@ public class Alien {
         headTranslate.addChild(leftEar);
         headTranslate.addChild(rightEye);
         headTranslate.addChild(leftEye);
-
-
-
-        //alienRoot.print(1,false);
         alienRoot.update();
 
     }
@@ -192,10 +187,7 @@ public class Alien {
     private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Material material){
         String name = "sphere";
         Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-
-        //change to multiple lights
         Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_m_1t.txt");
-
         Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
     }

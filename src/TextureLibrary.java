@@ -64,6 +64,7 @@ public class TextureLibrary {
     return t;
   }
 
+  //Modified for snowfall effect
   public static Texture loadTextureSnow(GL3 gl3, String filename) {
     Texture t = null;
     try {

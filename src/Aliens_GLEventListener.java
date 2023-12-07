@@ -6,11 +6,9 @@ import java.util.HashMap;
 
 public class Aliens_GLEventListener implements GLEventListener{
 
-    private static final boolean DISPLAY_SHADERS = false;
-
     public Aliens_GLEventListener(Camera camera) {
         this.camera = camera;
-        this.camera.setPosition(new Vec3(4f,20f,40f));
+        this.camera.setPosition(new Vec3(0f,20,35));
     }
 
     // ***************************************************
@@ -50,10 +48,6 @@ public class Aliens_GLEventListener implements GLEventListener{
     /* Clean up memory, if necessary */
     public void dispose(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
-        //lights[0].dispose(gl);
-        //lights[1].dispose(gl);
-        //lights[2].dispose(gl);
-        //floor.dispose(gl);
         alien1.dispose(gl);
     }
 
@@ -63,20 +57,12 @@ public class Aliens_GLEventListener implements GLEventListener{
      * This will be added to in later examples.
      */
 
-    // textures
-    private TextureLibrary texturesSpotlightRoom;
-    private TextureLibrary texturesAlien1;
-
-    private TextureLibrary texturesAlien2;
-
+    //Below is my code
     private Camera camera;
-    private Mat4 perspective;
-    private Model floor;
-    private SGNode alienRoot;
 
     private Alien alien1, alien2;
 
-    private Skybox skybox;
+    private Environment skybox;
 
     private Spotlight spotlight;
 
@@ -92,23 +78,16 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private Boolean lightsHaveChanged = true;
 
-    private double startRollTime;
-
     private double startRockTime;
 
-    private double rockElapsedTime = 0;
 
-    private double endRockTime = 0;
-
-
-    private HashMap<String,Light> lightsMap = new HashMap<>();
+    private final HashMap<String,Light> lightsMap = new HashMap<>();
 
     private Light[] lights;
 
     private void initialise(GL3 gl) {
-        createRandomNumbers();
-
-        texturesSpotlightRoom = new TextureLibrary();
+        // textures
+        TextureLibrary texturesSpotlightRoom = new TextureLibrary();
         texturesSpotlightRoom.add(gl, "chequerboard", "chequerboard.jpg");
         texturesSpotlightRoom.add(gl, "negx", "negx.jpg");
         texturesSpotlightRoom.add(gl, "posx", "posx.jpg");
@@ -120,13 +99,13 @@ public class Aliens_GLEventListener implements GLEventListener{
         texturesSpotlightRoom.add(gl, "spotBase", "spotBase.jpg");
         texturesSpotlightRoom.addSnowTexture(gl,"snow", "snow.png");
 
-        texturesAlien1 = new TextureLibrary();
+        TextureLibrary texturesAlien1 = new TextureLibrary();
         texturesAlien1.add(gl, "a", "alien1a.jpg");
         texturesAlien1.add(gl, "b", "alien1b.jpg");
         texturesAlien1.add(gl, "c", "alien1c.jpg");
         texturesAlien1.add(gl, "d", "alien1d.jpg");
 
-        texturesAlien2 = new TextureLibrary();
+        TextureLibrary texturesAlien2 = new TextureLibrary();
         texturesAlien2.add(gl, "a", "alien2a.jpg");
         texturesAlien2.add(gl, "b", "alien2b.jpg");
         texturesAlien2.add(gl, "c", "alien2c.jpg");
@@ -137,27 +116,20 @@ public class Aliens_GLEventListener implements GLEventListener{
         //Top left general light
         lightsMap.put("light1",new Light(gl));
         lightsMap.get("light1").setCamera(camera);
-        lightsMap.get("light1").setPosition(new Vec3(50f,15f,0f));
+        lightsMap.get("light1").setPosition(new Vec3(10f,25f,0f));
         //Spotlight
         lightsMap.put("light2",new Light(gl));
         lightsMap.get("light2").setCamera(camera);
-        lightsMap.get("light2").setPosition(new Vec3(-50f,-15f,0f));
+        lightsMap.get("light2").setPosition(new Vec3(-10f,25f,0f));
 
         lightsMap.put("spotlight",new Light(gl));
         lightsMap.get("spotlight").setCamera(camera);
         lights = lightsMap.values().toArray(new Light[0]);
-        // floor
-        /*String name = "floor";
-        Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-        Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_1t.txt");
-        Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-        Mat4 modelMatrix = Mat4Transform.scale(16,1f,16);
-//        floor = new Model(name, mesh, modelMatrix, shader, material, lights[1], camera, textures.get("chequerboard"));*/
 
-        alien1 = new Alien(gl, camera, lights, texturesAlien1,-4f);
-        alien2 = new Alien(gl, camera, lights, texturesAlien2,4f);
-        spotlight = new Spotlight(gl, getSpotlightOn(), camera, lights, texturesSpotlightRoom,-15f);
-        skybox = new Skybox(gl, camera, lights, texturesSpotlightRoom);
+        alien1 = new Alien(gl, camera, lights, texturesAlien1,-4f, true);
+        alien2 = new Alien(gl, camera, lights, texturesAlien2,4f, false);
+        spotlight = new Spotlight(gl, camera, lights, texturesSpotlightRoom,-15f);
+        skybox = new Environment(gl, camera, lights, texturesSpotlightRoom);
         lightsMap.get("spotlight").setPosition(spotlight.getLightPosition());
 
     }
@@ -191,7 +163,7 @@ public class Aliens_GLEventListener implements GLEventListener{
 
         // changing light position each frame
 
-        //floor.render(gl);
+        //floor.render(gl)
         skybox.render(gl,getSeconds()-startTime);
         alien1.render(gl);
         alien2.render(gl);
@@ -207,20 +179,6 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     private double getSeconds() {
         return System.currentTimeMillis()/1000.0;
-    }
-
-    // ***************************************************
-    /* An array of random numbers
-     */
-
-    private int NUM_RANDOMS = 1000;
-    private float[] randoms;
-
-    private void createRandomNumbers() {
-        randoms = new float[NUM_RANDOMS];
-        for (int i=0; i<NUM_RANDOMS; ++i) {
-            randoms[i] = (float)Math.random();
-        }
     }
 
     public void toggleLight1(){
@@ -248,10 +206,6 @@ public class Aliens_GLEventListener implements GLEventListener{
 
     public void lightsHaveChanged(){
         lightsHaveChanged = true;
-    }
-
-    public Boolean getSpotlightOn(){
-        return spotlightOn;
     }
 
     private void updateLights(GL3 gl) {
@@ -284,6 +238,7 @@ public class Aliens_GLEventListener implements GLEventListener{
         } else {
             lightsMap.remove("spotlight");
         }
+
         lights = lightsMap.values().toArray(new Light[0]); // Update the lights array
         lightsHaveChanged = false;
     }
