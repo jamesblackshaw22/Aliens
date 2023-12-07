@@ -11,6 +11,10 @@ public class Skybox {
     private float size = 40f;
     private ModelNode[] allModels = new ModelNode[5];
 
+    ModelNode negXModel;
+    ModelNode posZModel;
+    ModelNode posXModel;
+
     private SGNode skyboxRoot;
 
     TextureLibrary textures;
@@ -28,7 +32,7 @@ public class Skybox {
         allModels[0] = negYModel;
 
         //LEFT
-        ModelNode negXModel = new ModelNode("Square(negx)", makeWall(gl, textures.get("negx")));
+        negXModel = new ModelNode("Square(negx)", makeSnowyWall(gl, textures.get("negx"), textures.get("snow"), new Vec2(0,0)));
         TransformNode moveNegX = new TransformNode("moveNegX", Mat4Transform.translate(-size*0.5f,size*0.5f,0));
         TransformNode scaleNegX= new TransformNode("scaleNegX", Mat4Transform.scale(size, 1f, size));
         TransformNode rotateNegX= new TransformNode("rotateNegX", Mat4.multiply(Mat4Transform.rotateAroundZ(-90),Mat4Transform.rotateAroundY(90)));
@@ -45,7 +49,7 @@ public class Skybox {
 
         //RIGHT
 
-        ModelNode posXModel = new ModelNode("Square(PosX)", makeWall(gl, textures.get("posx")));
+        posXModel = new ModelNode("Square(PosX)", makeSnowyWall(gl, textures.get("posx"), textures.get("snow"),new Vec2(0,0)));
         TransformNode movePosX = new TransformNode("movePosX", Mat4Transform.translate(size*0.5f,size*0.5f,0));
         TransformNode scalePosX= new TransformNode("scalePosX", Mat4Transform.scale(size, 1f, size));
         TransformNode rotatePosX= new TransformNode("rotatePosX", Mat4.multiply(Mat4Transform.rotateAroundZ(90),Mat4Transform.rotateAroundY(-90)));
@@ -53,7 +57,7 @@ public class Skybox {
 
 
         //In Front
-        ModelNode posZModel = new ModelNode("Square(PosZ)", makeWall(gl, textures.get("posz")));
+        posZModel = new ModelNode("Square(PosZ)", makeSnowyWall(gl, textures.get("posz"), textures.get("snow"), new Vec2(0,-30)));
         TransformNode movePosZ = new TransformNode("movePosZ", Mat4Transform.translate(0,size*0.5f,-size*0.5f));
         TransformNode scalePosZ= new TransformNode("scalePosZ", Mat4Transform.scale(size, 1f, size));
         TransformNode rotatePosZ= new TransformNode("rotatePosZ", Mat4Transform.rotateAroundX(90));
@@ -115,7 +119,7 @@ public class Skybox {
     }
 
     private ModelMultipleLights makeWall(GL3 gl, Texture t1){
-        String name = "sphere";
+        String name = "wall";
         Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
         Shader shader = new Shader(gl, "vs_standard.txt", "fs_standard_m_1t.txt");
         Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f); // grey
@@ -125,7 +129,26 @@ public class Skybox {
         return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1);
     }
 
-    public void render(GL3 gl){
+    private ModelMultipleLights makeSnowyWall(GL3 gl, Texture t1, Texture snow, Vec2 offset){
+        String name = "wall";
+        Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
+        Shader shader = new Shader(gl, "vs_walls.txt", "fs_walls.txt");
+        Vec3 basecolor = new Vec3(0.5f, 0.5f, 0.5f); // grey
+        Material material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
+        Mat4 modelMatrix = new Mat4(1);
+
+        return new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, snow, offset);
+    }
+
+    public void render(GL3 gl, double elapsedTime){
+        double t = elapsedTime*0.1;  // *0.1 slows it down a bit
+        float offsetY = (float)(t - Math.floor(t));
+        float offsetX = 0.0f;
+        Vec2 offset = new Vec2(offsetX,offsetY);
+        posZModel.getModel().setOffset(offset);
+        negXModel.getModel().setOffset(offset);
+        posXModel.getModel().setOffset(offset);
+        skyboxRoot.update();
         skyboxRoot.draw(gl);
     }
 }

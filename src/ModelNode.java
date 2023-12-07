@@ -20,4 +20,8 @@ public class ModelNode extends SGNode {
     model.setLights(lights);
   }
 
+  public ModelMultipleLights getModel(){
+    return model;
+  }
+
 }

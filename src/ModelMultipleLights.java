@@ -2,6 +2,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.texture.Texture;
 import gmaths.Mat4;
+import gmaths.Vec2;
 import gmaths.Vec3;
 
 public class ModelMultipleLights {
@@ -15,9 +16,13 @@ public class ModelMultipleLights {
   private Light[] lights;
   private Texture diffuse;
   private Texture specular;
+  private Texture snow;
+
 
   private ModelMultipleLights spotlight;
   private Vec3 position;
+
+  private Vec2 offset;
 
   public ModelMultipleLights() {
     name = null;
@@ -50,6 +55,14 @@ public class ModelMultipleLights {
   public ModelMultipleLights(String name, Mesh mesh, Mat4 modelMatrix, Shader shader, Material material, Light[] lights,
                              Camera camera) {
     this(name, mesh, modelMatrix, shader, material, lights, camera, null, null);
+  }
+
+  public ModelMultipleLights(String name, Mesh mesh, Mat4 modelMatrix, Shader shader, Material material, Light[] lights,
+                             Camera camera,Texture wall, Texture snow, Vec2 offset ) {
+    this(name, mesh, modelMatrix, shader, material, lights, camera);
+    this.diffuse = wall;
+    this.snow = snow;
+    this.offset = offset;
   }
 
   public void setName(String s) {
@@ -120,9 +133,9 @@ public class ModelMultipleLights {
 
     shader.setInt(gl,"numLights", lights.length);
 
-    int temp = 0;
+
     for (int i=0; i<lights.length; i++) {
-      temp++;
+
       shader.setVec3(gl, "lights["+i+"].position", lights[i].getPosition());
       shader.setVec3(gl, "lights["+i+"].ambient", lights[i].getMaterial().getAmbient());
       shader.setVec3(gl, "lights["+i+"].diffuse", lights[i].getMaterial().getDiffuse());
@@ -147,6 +160,13 @@ public class ModelMultipleLights {
       specular.bind(gl);
     }
 
+    if (snow!= null){
+      shader.setInt(gl, "snow_texture", 1);
+      shader.setFloat(gl,"offset", offset.x, offset.y);
+      gl.glActiveTexture(GL.GL_TEXTURE1);
+      snow.bind(gl);
+    }
+
     // then render the mesh
     mesh.render(gl);
   }
@@ -159,4 +179,7 @@ public class ModelMultipleLights {
     mesh.dispose(gl);  // only need to dispose of mesh
   }
 
+  public void setOffset(Vec2 offset) {
+    this.offset = offset;
+  }
 }

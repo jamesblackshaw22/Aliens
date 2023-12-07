@@ -118,6 +118,7 @@ public class Aliens_GLEventListener implements GLEventListener{
         texturesSpotlightRoom.add(gl, "posz", "posz.jpg");
         texturesSpotlightRoom.add(gl, "attachment", "attachment.jpg");
         texturesSpotlightRoom.add(gl, "spotBase", "spotBase.jpg");
+        texturesSpotlightRoom.addSnowTexture(gl,"snow", "snow.png");
 
         texturesAlien1 = new TextureLibrary();
         texturesAlien1.add(gl, "a", "alien1a.jpg");
@@ -191,12 +192,10 @@ public class Aliens_GLEventListener implements GLEventListener{
         // changing light position each frame
 
         //floor.render(gl);
-        skybox.render(gl);
+        skybox.render(gl,getSeconds()-startTime);
         alien1.render(gl);
         alien2.render(gl);
         spotlight.render(gl);
-        lights[2].setPosition(new Vec3(-14f,21f,0f));
-        lights[2].render(gl);
     }
 
 
